@@ -39,7 +39,7 @@ $no = 1;
                 <br />
                 <table class="table table-bordered">
                     <tbody>
-                    @if(count($dataQuestion) == 0)
+                    @if(empty($dataQuestion))
                         <tr class="table-danger">
                             <td colspan="2"><center>NO QUESTION</center></td>
                         </tr>
@@ -57,7 +57,7 @@ $no = 1;
                             <tr>
                                 <td>
                                     @if($isClosed == '1')
-                                        @if(count($dataChoice) == 0)
+                                        @if(empty($dataChoice))
                                             <center>NO CHOICES</center>
                                         @else
                                             <table class="table table-hovered">
@@ -70,8 +70,8 @@ $no = 1;
                                             </table>
                                         @endif
                                     @else
-                                        @if(count($getStudentAnswer) == 0)
-                                            @if(count($dataChoice) == 0)
+                                        @if(empty($getStudentAnswer))
+                                            @if(empty($dataChoice))
                                                 <center>NO CHOICES</center>
                                             @else
                                                 <table class="table table-hovered">
@@ -90,7 +90,7 @@ $no = 1;
                                                 </table>
                                             @endif
                                         @else
-                                            @if(count($dataChoice) == 0)
+                                            @if(empty($dataChoice))
                                                 <center>NO CHOICES</center>
                                             @else
                                                 <table class="table table-hovered">

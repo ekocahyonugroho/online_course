@@ -45,7 +45,7 @@ Hi, {!! $studentName !!}
         $getStudentAnswer = $db->getCreatedCourseClassExamStudentAnswerByIdQuestionAndIdMember($question->idQuestion, $studentData->idMember)->first();
 
         $studentAnswer = "";
-        if(count($getStudentAnswer) == 1){
+        if(!empty($getStudentAnswer)){
             switch(strtoupper($getExam->examType)){
                 case "UPLOAD" :
                     $studentAnswer = "<td colspan=\"2\"><a href=\"".URL::to('/').$getStudentAnswer->answerValue."\">Download Answer</a></td>";
@@ -68,14 +68,14 @@ Hi, {!! $studentName !!}
             <td colspan="2">{!! $question->Question !!}</td>
         </tr>
         <tr>
-            @if(count($getStudentAnswer) == 0)
+            @if(empty($getStudentAnswer))
                 <td colspan="2"><medium>NO ANSWER</medium></td>
             @else
                 {!! $studentAnswer !!}
             @endif
         </tr>
         <tr>
-            @if(count($getStudentAnswer) == 0)
+            @if(empty($getStudentAnswer))
                 <td colspan="2">Score : 0</td>
             @else
                 <td colspan="2">Score : {!! $getStudentAnswer->answerScore !!}</td>
@@ -83,7 +83,7 @@ Hi, {!! $studentName !!}
         </tr>
         <tr>
             <td>Mentor Suggestion :</td>
-            @if(count($getStudentAnswer) == 0)
+            @if(empty($getStudentAnswer))
                 <td colspan="2"></td>
             @else
                 <td>{!! $getStudentAnswer->answerSuggestion !!}</td>

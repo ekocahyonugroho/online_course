@@ -67,7 +67,9 @@ if($idAuthorityCreator == "3"){
                 @elseif($dataMaterial->typeMaterial == "ppt")
                     {!! $dataMaterial->contentMaterial !!}
                 @elseif($dataMaterial->typeMaterial == "video")
+                    <div class="video-container">
                     {!! $dataMaterial->contentMaterial !!}
+                    </div>
                 @elseif($dataMaterial->typeMaterial == "file")
                     <button onclick="location.href='{!! asset($dataMaterial->contentMaterial) !!}'" class="btn btn-success">Download</button>
                     <iframe hidden src="{!! asset($dataMaterial->contentMaterial) !!}"></iframe>

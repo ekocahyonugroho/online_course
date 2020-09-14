@@ -12,6 +12,7 @@
 */
 
 Route::get('/', 'CoursesController@index');
+Route::get('/help', 'CoursesController@help_page');
 
 Route::get('/course/{course_code}-{class_course_id}/about', 'CoursesController@showClassCourseAbout');
 
@@ -245,6 +246,8 @@ Route::group(['prefix'=> 'manageOnlineCourse'], function () {
 
                             Route::get("/{idMaterial}/deleteMaterial",'OnlineClassController@deleteMaterial');
 
+                            Route::post("/submitMaterials",'OnlineClassController@submitMaterials');
+
                             Route::post("/submitArticle",'OnlineClassController@submitArticle');
 
                             Route::post("/submitPDF",'OnlineClassController@submitPDF');
@@ -459,6 +462,10 @@ Route::group(['prefix'=> 'myCourse'], function () {
         });
 
     });
+});
+
+Route::group(['prefix'=> 'courses'], function () {
+    Route::get("/", 'CoursesController@showAvailableCourses');
 });
 
 

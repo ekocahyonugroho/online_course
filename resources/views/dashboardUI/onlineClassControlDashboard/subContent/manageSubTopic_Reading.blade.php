@@ -32,12 +32,14 @@ $noMaterial = 1;
                 <i class="fa fa-user-circle-o"></i> Control Panel</div>
             <div class="card-body">
                 <button onclick="location.href='{!! URL::to('/') !!}/manageOnlineCourse/availableClass/manageOnlineClass/{!! $idCoursesClass !!}/manageSession/{!! $idTopic !!}'" class="btn btn-warning">Back</button>&nbsp;
-                <button onclick="showModals('myAddArticleModals', 'Write Article')" class="btn btn-primary">Write Article</button>&nbsp;
+                {{--<button onclick="showModals('myAddArticleModals', 'Write Article')" class="btn btn-primary">Write Article</button>&nbsp;
                 <button onclick="showModals('myUploadPDFModals', 'Upload PDF')" class="btn btn-primary">Upload PDF</button>&nbsp;
                 <button onclick="showModals('myUploadPPTXModals', 'Upload PPTX')" class="btn btn-primary">Upload PPTX</button>&nbsp;
                 <button onclick="showModals('myUploadVideoModals', 'Upload Video')" class="btn btn-primary">Upload Video File</button>&nbsp;
                 <button onclick="showModals('myUploadFileModals', 'Upload File')" class="btn btn-primary">Upload File</button>&nbsp;
-                <button onclick="showModals('myUploadExternalModals', 'External Reference')" class="btn btn-primary">External Reference</button>&nbsp;
+                <button onclick="showModals('myUploadExternalModals', 'External Reference')" class="btn btn-primary">External Reference</button>--}}&nbsp;
+
+                <button onclick="showModals('myAddMaterialsModals', 'Create Course Materials')" class="btn btn-primary"><i class="fa fa-cloud-upload"></i> Create Materials</button>
             </div>
         </div>
     </div>
@@ -103,7 +105,7 @@ $noMaterial = 1;
         </div>
     </div>
 </div>
-<div class="modal fade" data-keyboard="false" data-backdrop="static" id="myAddArticleModals" tabindex="-1" role="dialog"
+{{--<div class="modal fade" data-keyboard="false" data-backdrop="static" id="myAddArticleModals" tabindex="-1" role="dialog"
      aria-labelledby="myModalLabel"
      aria-hidden="true">
     <div class="modal-dialog modal-lg">
@@ -159,8 +161,8 @@ $noMaterial = 1;
         <!-- /.modal-content -->
     </div>
     <!-- /.modal-dialog -->
-</div>
-<div class="modal fade" data-keyboard="false" data-backdrop="static" id="myUploadPDFModals" tabindex="-1" role="dialog"
+</div>--}}
+{{--<div class="modal fade" data-keyboard="false" data-backdrop="static" id="myUploadPDFModals" tabindex="-1" role="dialog"
      aria-labelledby="myModalLabel"
      aria-hidden="true">
     <div class="modal-dialog modal-lg">
@@ -213,8 +215,8 @@ $noMaterial = 1;
         <!-- /.modal-content -->
     </div>
     <!-- /.modal-dialog -->
-</div>
-<div class="modal fade" data-keyboard="false" data-backdrop="static" id="myUploadPPTXModals" tabindex="-1" role="dialog"
+</div>--}}
+{{--<div class="modal fade" data-keyboard="false" data-backdrop="static" id="myUploadPPTXModals" tabindex="-1" role="dialog"
      aria-labelledby="myModalLabel"
      aria-hidden="true">
     <div class="modal-dialog modal-lg">
@@ -267,8 +269,8 @@ $noMaterial = 1;
         <!-- /.modal-content -->
     </div>
     <!-- /.modal-dialog -->
-</div>
-<div class="modal fade" data-keyboard="false" data-backdrop="static" id="myUploadVideoModals" tabindex="-1" role="dialog"
+</div>--}}
+{{--<div class="modal fade" data-keyboard="false" data-backdrop="static" id="myUploadVideoModals" tabindex="-1" role="dialog"
      aria-labelledby="myModalLabel"
      aria-hidden="true">
     <div class="modal-dialog modal-lg">
@@ -321,8 +323,8 @@ $noMaterial = 1;
         <!-- /.modal-content -->
     </div>
     <!-- /.modal-dialog -->
-</div>
-<div class="modal fade" data-keyboard="false" data-backdrop="static" id="myUploadFileModals" tabindex="-1" role="dialog"
+</div>--}}
+{{--<div class="modal fade" data-keyboard="false" data-backdrop="static" id="myUploadFileModals" tabindex="-1" role="dialog"
      aria-labelledby="myModalLabel"
      aria-hidden="true">
     <div class="modal-dialog modal-lg">
@@ -375,8 +377,8 @@ $noMaterial = 1;
         <!-- /.modal-content -->
     </div>
     <!-- /.modal-dialog -->
-</div>
-<div class="modal fade" data-keyboard="false" data-backdrop="static" id="myUploadExternalModals" tabindex="-1" role="dialog"
+</div>--}}
+{{--<div class="modal fade" data-keyboard="false" data-backdrop="static" id="myUploadExternalModals" tabindex="-1" role="dialog"
      aria-labelledby="myModalLabel"
      aria-hidden="true">
     <div class="modal-dialog modal-lg">
@@ -429,7 +431,150 @@ $noMaterial = 1;
         <!-- /.modal-content -->
     </div>
     <!-- /.modal-dialog -->
+</div>--}}
+
+<div class="modal fade" data-keyboard="false" data-backdrop="static" id="myAddMaterialsModals" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content panel-info">
+            <div class="modal-header panel-heading">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                <h4 class="modal-title" id="myAddMaterialsModalsLabel"></h4>
+            </div>
+            <div class="modal-body" id="myAddMaterialsModalsBody">
+                <form id="formUploadArticle" method="post" action="{!! URL::to('/') !!}/manageOnlineCourse/availableClass/manageOnlineClass/{!! $idCoursesClass !!}/manageSession/{!! $idTopic !!}/{!! $idSubTopic !!}/submitMaterials" class="form-horizontal">
+                    <input type="hidden" name="_token" value="{{ csrf_token() }}" />
+                    <input type="hidden" name="idCoursesClass" value="{!! $idCoursesClass !!}" />
+                    <input type="hidden" name="idTopic" value="{!! $idTopic !!}">
+                    <input type="hidden" name="idSubTopic" value="{!! $idSubTopic !!}" />
+                    <div class="form-group">
+                        <label class="control-label col-sm-8" for="email">Material Type :</label>
+                        <div class="col-sm-12">
+                            <select class="form-control" id="selectMaterialType" name="selectMaterialType">
+                                <option value="0">Choose</option>
+                                <option value="article">Write Article</option>
+                                <option value="youtube">Youtube Video</option>
+                                <option value="file">Upload File</option>
+                                <option value="external">External Link</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div id="divWriteArticle" hidden="hidden">
+                        <div class="form-group">
+                            <label class="control-label col-sm-8" for="email">Title :</label>
+                            <div class="col-sm-12">
+                                <input type="text" name="titleArticle" class="form-control" />
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="control-label col-sm-8" for="email">Description :</label>
+                            <div class="col-sm-12">
+                                <textarea class="form-control" name="descriptionArticle"></textarea>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="control-label col-sm-4" for="email">Article :</label>
+                            <div class="col-sm-12">
+                                <textarea class="form-control" name="article"></textarea>
+                                <small class="text text-muted">You can write an article on this platform directly. If your article has an image, please use external link instead, or you can follow this <a target="_blank" href="https://support.google.com/drive/thread/34363118?hl=en">guidance</a></small>
+                                <script>
+                                    CKEDITOR.replace( 'article');
+                                </script>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <div class="col-sm-offset-4 col-sm-10">
+                                <button type="submit" class="btn btn-primary">Submit</button>
+                            </div>
+                        </div>
+                    </div>
+                    <div id="divFileArticle" hidden="hidden">
+                        <div class="form-group">
+                            <label class="control-label col-sm-8" for="email">Title :</label>
+                            <div class="col-sm-12">
+                                <input type="text" name="titleFile" class="form-control" />
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="control-label col-sm-8" for="email">Description :</label>
+                            <div class="col-sm-12">
+                                <textarea class="form-control" name="descriptionFile"></textarea>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="control-label col-sm-4" for="email">File (Max  {!! ini_get('post_max_size') !!} bytes):</label>
+                            <div class="col-sm-12">
+                                <input type="file" name="uploadFile" class="form-control" />
+                                <small class="text text-muted">Uploaded files would be in download mode except PDF files</small>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <div class="col-sm-offset-4 col-sm-10">
+                                <button type="submit" class="btn btn-primary">Submit</button>
+                            </div>
+                        </div>
+                    </div>
+                    <div id="divYoutube" hidden="hidden">
+                        <div class="form-group">
+                            <label class="control-label col-sm-8" for="email">Title :</label>
+                            <div class="col-sm-12">
+                                <input type="text" name="titleYoutube" class="form-control" />
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="control-label col-sm-8" for="email">Description :</label>
+                            <div class="col-sm-12">
+                                <textarea class="form-control" name="descriptionYoutube"></textarea>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="control-label col-sm-4" for="email">Video Embed URL :</label>
+                            <div class="col-sm-12">
+                                <input type="text" name="videoURL" class="form-control" />
+                                <small class="text text-muted">You can follow this <a target="_blank" href="https://support.google.com/youtube/answer/171780?hl=en">guidance</a> how to embed Youtube videos on this platform</small>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <div class="col-sm-offset-4 col-sm-10">
+                                <button type="submit" class="btn btn-primary">Submit</button>
+                            </div>
+                        </div>
+                    </div>
+                    <div id="divExternal" hidden="hidden">
+                        <div class="form-group">
+                            <label class="control-label col-sm-8" for="email">Title :</label>
+                            <div class="col-sm-12">
+                                <input type="text" name="titleExternal" class="form-control" />
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="control-label col-sm-8" for="email">Description :</label>
+                            <div class="col-sm-12">
+                                <textarea class="form-control" name="descriptionExternal"></textarea>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="control-label col-sm-4" for="email">URL Address:</label>
+                            <div class="col-sm-12">
+                                <input type="text" name="externalURL" class="form-control" />
+                                <small class="text text-muted">Example : https://jamesclear.com/decision-making</small>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <div class="col-sm-offset-4 col-sm-10">
+                                <button type="submit" class="btn btn-primary">Submit</button>
+                            </div>
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer" id="myAddMaterialsModalsExtraButton">
+            </div>
+        </div>
+        <!-- /.modal-content -->
+    </div>
+    <!-- /.modal-dialog -->
 </div>
+
 <div class="modal fade" data-keyboard="false" data-backdrop="static" id="multiPurposeModals" tabindex="-1" role="dialog"
      aria-labelledby="myModalLabel"
      aria-hidden="true">
@@ -478,4 +623,41 @@ $noMaterial = 1;
             location.href = "/manageOnlineCourse/availableClass/manageOnlineClass/{!! $idCoursesClass !!}/manageSession/{!! $idTopic !!}/{!! $idSubTopic !!}/"+idMaterial+"/deleteMaterial";
         }
     }
+
+    $(document).ready(function() {
+        $('#selectMaterialType').change(function(){
+            if($(this).val() === "article"){
+                $("#divWriteArticle").removeAttr("hidden");
+                $("#divFileArticle").attr("hidden","hidden");
+                $("#divYoutube").attr("hidden","hidden");
+                $("#divExternal").attr("hidden","hidden");
+                $("#formUploadArticle").removeAttr("enctype");
+            }else if($(this).val() === "file"){
+                $("#divFileArticle").removeAttr("hidden");
+                $("#divWriteArticle").attr("hidden","hidden");
+                $("#divYoutube").attr("hidden","hidden");
+                $("#divExternal").attr("hidden","hidden");
+                $("#formUploadArticle").attr("enctype","multipart/form-data");
+            }else if($(this).val() === "youtube"){
+                $("#divYoutube").removeAttr("hidden");
+                $("#divWriteArticle").attr("hidden","hidden");
+                $("#divFileArticle").attr("hidden","hidden");
+                $("#divExternal").attr("hidden","hidden");
+                $("#formUploadArticle").removeAttr("enctype");
+            }else if($(this).val() === "external"){
+                $("#divExternal").removeAttr("hidden");
+                $("#divWriteArticle").attr("hidden","hidden");
+                $("#divFileArticle").attr("hidden","hidden");
+                $("#divYoutube").attr("hidden","hidden");
+                $("#formUploadArticle").removeAttr("enctype");
+            }else{
+                $("#divWriteArticle").attr("hidden","hidden");
+                $("#divFileArticle").attr("hidden","hidden");
+                $("#divYoutube").attr("hidden","hidden");
+                $("#divExternal").attr("hidden","hidden");
+                $("#formUploadArticle").removeAttr("enctype");
+            }
+            /*alert($(this).val());*/
+        });
+    });
 </script>

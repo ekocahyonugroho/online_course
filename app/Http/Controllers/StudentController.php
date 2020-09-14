@@ -165,11 +165,15 @@ class StudentController extends Controller
                         case "1" :
                             $getSubTopicMaterial = $this->databaseConn->getCoursesClassSubTopicMaterialByIdSubTopic($idSubTopic)->first();
 
-                            if(count($getSubTopicMaterial) == 0){
-                                $contentMaterial = "";
+                            if(is_array($getSubTopicMaterial)) {
+                                if (count($getSubTopicMaterial) == 0) {
+                                    $contentMaterial = "";
+                                } else {
+                                    $idMaterial = $getSubTopicMaterial->idMaterial;
+                                    $contentMaterial = view('dashboardUI.onlineClassControlDashboard.subContent.openMaterial', compact('idCoursesClass', 'idTopic', 'idSubTopic', 'idMaterial'));
+                                }
                             }else{
-                                $idMaterial = $getSubTopicMaterial->idMaterial;
-                                $contentMaterial = view('dashboardUI.onlineClassControlDashboard.subContent.openMaterial', compact('idCoursesClass', 'idTopic', 'idSubTopic','idMaterial'));
+                                $contentMaterial = "";
                             }
 
                             $subcontent = view('dashboardUI.onlineClassControlDashboard.subContent.enterSubTopic_Reading', compact('idCoursesClass','idTopic', 'idSubTopic', 'contentMaterial'));
@@ -654,9 +658,9 @@ class StudentController extends Controller
 
         $getChoiceValue = $this->databaseConn->getCoursesClassAssignmentChoiceValueByIdChoice($req->answer)->first();
 
-        if(count($getChoiceValue) == 0){
+        if(empty($getChoiceValue)){
             return redirect('/myCourse/enterClass/'.$idCoursesClass.'/enterSession/'.$idTopic.'/'.$idSubTopic.'/enterAssignment/'.$idAssignment.'/'.$typeAssignment)
-                ->with('error','Failed to process your answer. Selected choice was not found on the system.');
+                ->with('error','Failed to process your answer. Selected choice was not found on the system. ID : '.$req->answer);
         }
 
         $this->databaseConn->submitCreatedCoursesClassAssignmentChoicesAnswer($idQuestion, $req->answer, $getChoiceValue->choiceScore);
@@ -681,9 +685,9 @@ class StudentController extends Controller
 
         $getChoiceValue = $this->databaseConn->getCoursesClassExamChoiceValueByIdChoice($req->answer)->first();
 
-        if(count($getChoiceValue) == 0){
+        if(empty($getChoiceValue)){
             return redirect('/myCourse/enterClass/'.$idCoursesClass.'/enterSession/'.$idTopic.'/'.$idSubTopic.'/enterExam/'.$idExam.'/'.$typeExam)
-                ->with('error','Failed to process your answer. Selected choice was not found on the system.');
+                ->with('error','Failed to process your answer. Selected choice was not found on the system. ID : $req->answer');
         }
 
         $this->databaseConn->submitCreatedCoursesClassExamChoicesAnswer($idQuestion, $req->answer, $getChoiceValue->choiceScore);
@@ -878,6 +882,78 @@ class StudentController extends Controller
             }
         } else {
             return redirect('/')->with('status', 'error');
+        }
+    }
+
+    public function showCourseProgressReport($idCoursesClass){
+        $isUserAllowed = $this->appHelper->isUserAllowedToAccess();
+
+        if ($isUserAllowed == FALSE) {
+            return redirect('/logout')->with('status', 'You are not allowed to access this system by our administrator.');
+        }
+
+        if (session('idMember')) {
+            $dataMember = $this->databaseConn->getAccountDataByIdMember(session('idMember'))->first();
+
+            if ($dataMember) {
+                $getOnlineClassData = $this->databaseConn->getCoursesClassGeneralDataByIdCoursesClass($idCoursesClass);
+
+                if ($getOnlineClassData->count() == 0) {
+                    return redirect('/dashboard')->with('error', 'Online course you wished to open was not found!.');
+                }
+
+                if ($getOnlineClassData->first()->IsOpened == "0") {
+                    return redirect('/dashboard')->with('error', 'Online course you wished to open is closed!');
+                }
+
+                $idAuthority = $dataMember->idAuthority;
+
+                if ($idAuthority == "4" OR $idAuthority == "5") {
+                    $isStudent = $this->databaseConn->getEnrolledClassByIdClassCourseAndIdMember($idCoursesClass, session('idMember'))->count();
+
+                    if ($isStudent == 0) {
+                        return redirect('/dashboard')->with('error', 'You have not enrolled this Online Class!');
+                    }
+
+                    $leftMenuBar = $this->FormUI->getDefaultMenuBarEnterCourse($idAuthority, $idCoursesClass);
+
+                    $idUser = session('idMember');
+
+                    $content = view('dashboardUI.dashboardContents.StudentProgressDashboard', compact('idCoursesClass', 'idUser'));
+
+                    return view('dashboardUI.dashboard', compact('leftMenuBar', 'content'));
+                }
+            } else {
+                return redirect('/logout')->with('status', 'Error. Your login credentials was not found in member database. Please contact our IT Support.');
+            }
+        } else {
+            return redirect('/')->with('status', 'error');
+        }
+    }
+
+    public function getCompleteStatusByIdTopicAndIdUserAndIdCoursesClass($idTopic, $idUser, $idCoursesClass){
+        $stmtSubTopic = $this->databaseConn->getCoursesClassSubTopicByIdTopic($idTopic);
+
+        if($stmtSubTopic->count() > 0){
+            $countSubTopic = $stmtSubTopic->count();
+            $dataSubTopic = $stmtSubTopic->get();
+
+            $countAccess = 0;
+            foreach($dataSubTopic AS $subTopic){
+                $stmtAccessSubTopic = $this->databaseConn->getStudentAccessSubTopicCount($subTopic->idSubTopic, $idUser);
+
+                if($stmtAccessSubTopic->count() > 0){
+                    $countAccess++;
+                }
+            }
+
+            if($countSubTopic === $countAccess){
+                return "<span class=\"badge badge-success\">COMPLETED</span>";
+            }else{
+                return "<span class=\"badge badge-danger\">INCOMPLETE</span>";
+            }
+        }else{
+            return "<span class=\"badge badge-danger\">INCOMPLETE</span>";
         }
     }
 }

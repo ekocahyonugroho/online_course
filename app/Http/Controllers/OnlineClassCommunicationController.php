@@ -996,9 +996,9 @@ class OnlineClassCommunicationController extends Controller
                     }
                 }
 
-                $this->databaseConn->closeForumThread($idForum)->with('success','This forum has been closed successfully.');
+                $this->databaseConn->closeForumThread($idForum);
 
-                return redirect('/manageOnlineCourse/availableClass/manageOnlineClass/'.$idCoursesClass.'/manageForum');
+                return redirect('/manageOnlineCourse/availableClass/manageOnlineClass/'.$idCoursesClass.'/manageForum')->with('success','This forum has been closed successfully.');
             }else{
                 return redirect('/logout')->with('status','Error. Your login credentials was not found in member database. Please contact our IT Support.');
             }

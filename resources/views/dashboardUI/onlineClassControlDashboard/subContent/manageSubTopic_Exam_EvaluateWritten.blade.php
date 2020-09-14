@@ -60,7 +60,7 @@ switch($idAuthority){
                 <br />
                 <table class="table table-bordered">
                     <tbody>
-                    @if(count($dataQuestion) == 0)
+                    @if(empty($dataQuestion))
                         <tr class="table-danger">
                             <td colspan="2"><center>NO QUESTION</center></td>
                         </tr>
@@ -75,7 +75,7 @@ switch($idAuthority){
                             </tr>
                             <tr>
                                 <td>
-                                    @if(count($getStudentAnswer) == 0)
+                                    @if(empty($getStudentAnswer))
                                         <form>
                                             <div class="form-group">
                                                 <label class="control-label col-sm-4" for="email">Your Answer (Max  {!! ini_get('post_max_size') !!} bytes) :</label>
@@ -105,7 +105,7 @@ switch($idAuthority){
                             <tr>
                                 <td>
                                     @if($getExamCompletion->isEvaluated == "0")
-                                        @if(count($getStudentAnswer) == 1)
+                                        @if(!empty($getStudentAnswer))
                                             @if($getStudentAnswer->isScored == '0')
                                                 <form method="post" action="{!! URL::to('/') !!}/manageOnlineCourse/availableClass/manageOnlineClass/{!! $idCoursesClass !!}/manageSession/{!! $idTopic !!}/{!! $idSubTopic !!}/manageExam/{!! $idExam !!}/written/evaluateExam/{!! $idMember !!}/submitEvaluate" class="form-horizontal">
                                                     <input type="hidden" name="_token" value="{{ csrf_token() }}">

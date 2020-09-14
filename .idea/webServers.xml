@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="WebServers">
+    <option name="servers">
+      <webServer id="8a551429-c4d1-4046-9494-6f99359120d9" name="onlinecourse" url="http://192.168.1.17">
+        <fileTransfer host="192.168.1.17" port="21" rootFolder="/var/www/html/online_course">
+          <advancedOptions>
+            <advancedOptions dataProtectionLevel="Private" passiveMode="true" shareSSLContext="true" />
+          </advancedOptions>
+          <option name="port" value="21" />
+        </fileTransfer>
+      </webServer>
+      <webServer id="6179fc54-dfd2-4959-bb3a-b1e871cffa19" name="onlinecourse_ssh" url="http://192.168.1.17">
+        <fileTransfer host="192.168.1.17" port="22" accessType="SFTP">
+          <advancedOptions>
+            <advancedOptions dataProtectionLevel="Private" passiveMode="true" shareSSLContext="true" />
+          </advancedOptions>
+          <option name="port" value="22" />
+        </fileTransfer>
+      </webServer>
+    </option>
+  </component>
+</project>

@@ -56,9 +56,11 @@ $dataMaterial = $db->getCoursesClassSubTopicMaterialByIdMaterial($idMaterial)->f
 
                     </script>
                 @elseif($dataMaterial->typeMaterial == "ppt")
-                    {!! $dataMaterial->contentMaterial !!}
+                    <button onclick="location.href='{!! asset($dataMaterial->contentMaterial) !!}'" class="btn btn-success">Download</button>
                 @elseif($dataMaterial->typeMaterial == "video")
-                    {!! $dataMaterial->contentMaterial !!}
+                    <div class="video-container">
+                        {!! $dataMaterial->contentMaterial !!}
+                    </div>
                 @elseif($dataMaterial->typeMaterial == "file")
                     <button onclick="location.href='{!! asset($dataMaterial->contentMaterial) !!}'" class="btn btn-success">Download</button>
                     <iframe hidden src="{!! asset($dataMaterial->contentMaterial) !!}"></iframe>

@@ -63,6 +63,8 @@ switch ($idAuthority) {
 
     <link href="{!! asset('plugin/pdfviewer/jquery.touchPDF.css') !!}" rel="stylesheet" media="screen" />
 
+    <link href="{!! asset('css/embed_youtube.css') !!}" rel="stylesheet" />
+
     <!-- Bootstrap core JavaScript-->
     <script src="{!! asset('dashboard_vendor/vendor/jquery/jquery.min.js') !!}"></script>
 

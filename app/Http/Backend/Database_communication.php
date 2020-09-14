@@ -60,34 +60,40 @@ class Database_communication {
     }
 
     public function getFullNameMemberByIdMember($idMember){
-        $idAuthority = $this->getAccountDataByIdMember($idMember)->first()->idAuthority;
+        $dataMember = $this->getAccountDataByIdMember($idMember)->first();
 
-        $dataMember = $this->getFullMemberData($idMember, $idAuthority)->first();
+        if(!empty($dataMember)) {
+            $idAuthority = $dataMember->idAuthority;
 
-        $Fullname = "";
+            $dataMember = $this->getFullMemberData($idMember, $idAuthority)->first();
 
-        switch ($idAuthority) {
-            case "1":
-                $Fullname = $dataMember->name;
-                break;
-            case "2":
-                $Fullname = $dataMember->name;
-                break;
-            case "3":
-                $Fullname = $dataMember->nama_dosen;
-                break;
-            case "4":
-                $Fullname = $dataMember->nama;
-                break;
-            case "5":
-                $Fullname = $dataMember->nameFirst." ".$dataMember->nameLast;
-                break;
-            default:
-                $Fullname = "NO NAME";
-                break;
+            $Fullname = "";
+
+            switch ($idAuthority) {
+                case "1":
+                    $Fullname = $dataMember->name;
+                    break;
+                case "2":
+                    $Fullname = $dataMember->name;
+                    break;
+                case "3":
+                    $Fullname = $dataMember->nama_dosen;
+                    break;
+                case "4":
+                    $Fullname = $dataMember->nama;
+                    break;
+                case "5":
+                    $Fullname = $dataMember->nameFirst . " " . $dataMember->nameLast;
+                    break;
+                default:
+                    $Fullname = "NO NAME";
+                    break;
+            }
+
+            return $Fullname;
+        }else{
+            return "NO DATA";
         }
-
-        return $Fullname;
     }
 
     public function getUserEmailAndNameByIdMemberAndIdAuthority($idMember, $idAuthority){
@@ -747,8 +753,8 @@ class Database_communication {
         $description = "";
         $dateTime = date('Y-m-d H:i:s');
 
-        if(!empty($req->description)){
-            $description = $req->description;
+        if(!empty($req->descriptionArticle)){
+            $description = $req->descriptionArticle;
         }
 
         $values = array(
@@ -757,7 +763,7 @@ class Database_communication {
             'idUser' => session('idMember'),
             'dateTime' => $dateTime,
             'typeMaterial' => "article",
-            'titleMaterial' => $req->title,
+            'titleMaterial' => $req->titleArticle,
             'descriptionMaterial' => $description,
             'contentMaterial' => $req->article
         );
@@ -767,10 +773,24 @@ class Database_communication {
 
     public function submitSubTopicFile($req, $completePathFile, $typeMaterial){
         $description = "";
+        $title = "";
         $dateTime = date('Y-m-d H:i:s');
 
-        if(!empty($req->description)){
-            $description = $req->description;
+        if($typeMaterial === "video"){
+            $title = $req->titleYoutube;
+            if(!empty($req->descriptionYoutube)){
+                $description = $req->descriptionYoutube;
+            }
+        }else if($typeMaterial === "external"){
+            $title = $req->titleExternal;
+            if(!empty($req->descriptionExternal)){
+                $description = $req->descriptionExternal;
+            }
+        }else{
+            $title = $req->titleFile;
+            if(!empty($req->descriptionFile)){
+                $description = $req->descriptionFile;
+            }
         }
 
         $values = array(
@@ -779,7 +799,7 @@ class Database_communication {
             'idUser' => session('idMember'),
             'dateTime' => $dateTime,
             'typeMaterial' => $typeMaterial,
-            'titleMaterial' => $req->title,
+            'titleMaterial' => $title,
             'descriptionMaterial' => $description,
             'contentMaterial' => $completePathFile
         );
@@ -2148,6 +2168,14 @@ class Database_communication {
         );
 
         DB::table('sis_online_course.created_courses_class_forum')->update($values);
+    }
+
+    public function getGuidanceByIdAuthority($id){
+        $stmt = DB::table('sis_online_course.guidance')
+            ->where('guidance.idAuthority','=',$id)
+            ->OrderBy('guidance.title','ASC');
+
+        return $stmt;
     }
 }
 ?>

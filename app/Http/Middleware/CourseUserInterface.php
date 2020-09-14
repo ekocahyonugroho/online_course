@@ -20,7 +20,7 @@ class CourseUserInterface {
         $this->userController = new UserController();
     }
 
-    public function enrollButtonToCourseClass($idCoursesClass){
+    public function enrollButtonToCourseClass($idCoursesClass, $CourseCode){
         try {
 
             $sqlCoursesClass = $this->databaseConn->getCoursesClassGeneralDataByIdCoursesClass($idCoursesClass);
@@ -41,7 +41,7 @@ class CourseUserInterface {
                             $isEnrolled = $this->userController->isUserAlreadyEnroll($idCoursesClass);
 
                             if($isEnrolled == TRUE){
-                                return "<button id='goToCourseBtn' class='btn btn-success'>GO TO COURSE</button><input type='hidden' id='idCourseClass' value='$idCoursesClass' /> ";
+                                return "<button onclick=\"location.href = 'https://".$_SERVER['SERVER_NAME']."/myCourse/enterClass/$idCoursesClass'\" id='goToCourseBtn' class='btn btn-success'>GO TO COURSE</button><input type='hidden' id='idCourseClass' value='$idCoursesClass' /> ";
                             }else if ($isEnrolled == FALSE) {
                                 $isUserListedWaitingList = $this->userController->isUserListedWaitingList($idCoursesClass);
 
@@ -50,12 +50,12 @@ class CourseUserInterface {
                                     $dataWaitingList = $this->databaseConn->getWaitingListClassByIdClassCourseAndIdMember($idCoursesClass, session('idMember'))->first();
 
                                     if($dataWaitingList->isConfirmed == "1"){
-                                        return "<button id='goToCourseBtn' class='btn btn-success'>GO TO COURSE</button><input type='hidden' id='idCourseClass' value='$idCoursesClass' /> ";
+                                        return "<button onclick=\"location.href = 'https://".$_SERVER['SERVER_NAME']."/myCourse/enterClass/$idCoursesClass'\" id='goToCourseBtn' class='btn btn-success'>GO TO COURSE</button><input type='hidden' id='idCourseClass' value='$idCoursesClass' /> ";
                                     }else if($dataWaitingList->isConfirmed == "0"){
                                         return "<button id='goToCourseBtn' class='btn btn-warning'>WAITING CONFIRMATION</button><input type='hidden' id='idCourseClass' value='$idCoursesClass' /> ";
                                     }
 
-                                    return "<button id='goToCourseBtn' class='btn btn-success'>GO TO COURSE</button><input type='hidden' id='idCourseClass' value='$idCoursesClass' /> ";
+                                    return "<button onclick=\"location.href = 'https://".$_SERVER['SERVER_NAME']."/myCourse/enterClass/$idCoursesClass'\" id='goToCourseBtn' class='btn btn-success'>GO TO COURSE</button><input type='hidden' id='idCourseClass' value='$idCoursesClass' /> ";
                                 } else if ($isUserListedWaitingList == FALSE) {
                                     return "<button id='enrollBtn' class='btn btn-primary'>ENROLL</button><input type='hidden' id='idCourseClassEnroll' value='$idCoursesClass' /> ";
                                 }

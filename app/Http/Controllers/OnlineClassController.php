@@ -114,7 +114,7 @@ class OnlineClassController extends Controller
                     }
 
                     $validator = Validator::make($req->all(), [
-                        'title' => [
+                        'titleArticle' => [
                             'required'
                         ],
                         'article' => [
@@ -194,7 +194,74 @@ class OnlineClassController extends Controller
         }
     }
 
-    public function submitPDF(Request $req){
+    public function submitMaterials(Request $req){
+        $isUserAllowed = $this->appHelper->isUserAllowedToAccess();
+        $idCoursesClass = $req->idCoursesClass;
+        $idTopic = $req->idTopic;
+        $idSubTopic = $req->idSubTopic;
+        $materialType = $req->selectMaterialType;
+
+        if($isUserAllowed == FALSE){
+            return redirect('/logout')->with('status','You are not allowed to access this system by our administrator.');
+        }
+
+        if(session('idMember')){
+            $dataMember = $this->databaseConn->getAccountDataByIdMember(session('idMember'))->first();
+
+            if($dataMember) {
+                $idAuthority = $dataMember->idAuthority;
+
+                if($idAuthority == "1" OR $idAuthority == "2" OR $idAuthority == "3") {
+
+                    if($idAuthority == "3") {
+                        $getMentor = $this->databaseConn->getMentorOnlineClassByIdCoursesClassAndIdMember($idCoursesClass,session('idMember'))->count();
+
+                        if($getMentor == 0){
+                            return redirect('/dashboard')->with('error','You have not assigned to mentor this Online Class. Please contact IT Support if this was a mistake.');
+                        }
+                    }
+
+                    if($materialType === "0" OR empty($materialType)){
+                        return redirect('/manageOnlineCourse/availableClass/manageOnlineClass/' . $idCoursesClass . '/manageSession/' . $idTopic . '/' . $idSubTopic)->with('error','Please choose the correct material type! Submitted type was '.$materialType);
+                    }
+
+                    if($materialType === "article"){
+                        $this->submitArticle($req);
+                    }else if($materialType === "youtube"){
+                        $this->submitVideo($req);
+                    }else if($materialType === "external"){
+                        $this->submitExternal($req);
+                    }else if($materialType === "file"){
+                        if( $req->hasFile('uploadFile') ) {
+                            $file = $req->file('uploadFile');
+                            $fileExtention = $file->clientExtension();
+
+                            if ($fileExtention === "pdf" OR $fileExtention === "PDF") {
+                                $this->submitPDF($req, "pdf");
+                            } else if ($fileExtention === "pptx" OR $fileExtention === "PPTX" OR $fileExtention === "ppt" OR $fileExtention === "PPT") {
+                                $this->submitPDF($req, "ppt");
+                            }else{
+                                $this->submitFile($req);
+                            }
+                        }else{
+                            return redirect('/manageOnlineCourse/availableClass/manageOnlineClass/' . $idCoursesClass . '/manageSession/' . $idTopic . '/' . $idSubTopic)->with("error","You have to select a file before submit!");
+                        }
+                    }
+
+                    return redirect('/manageOnlineCourse/availableClass/manageOnlineClass/' . $idCoursesClass . '/manageSession/' . $idTopic . '/' . $idSubTopic);
+
+                }else{
+                    return redirect('/dashboard');
+                }
+            }else{
+                return redirect('/logout')->with('status','Error. Your login credentials was not found in member database. Please contact our IT Support.');
+            }
+        }else{
+            return redirect('/')->with('status','error');
+        }
+    }
+
+    public function submitPDF(Request $req, $type="pdf"){
         $isUserAllowed = $this->appHelper->isUserAllowedToAccess();
         $idCoursesClass = $req->idCoursesClass;
         $idTopic = $req->idTopic;
@@ -220,15 +287,15 @@ class OnlineClassController extends Controller
                         }
                     }
 
-                    if( $req->hasFile('pdfFile') ) {
+                    if( $req->hasFile('uploadFile') ) {
 
                         $validator = Validator::make($req->all(), [
-                            'title' => [
+                            'titleFile' => [
                                 'required'
                             ],
-                            'pdfFile' => [
+                            'uploadFile' => [
                                 'required',
-                                'mimes:pdf,PDF'
+                                'mimes:pdf,PDF,ppt,PPT,pptx,PPTX'
                             ]
                         ]);
 
@@ -246,15 +313,15 @@ class OnlineClassController extends Controller
 
                         $destination = base_path().'/public'.$imageFolder;
 
-                        $file = $req->file('pdfFile');
+                        $file = $req->file('uploadFile');
                         $fileExtention = $file->clientExtension();
 
-                        $fileName = $req->title.".".$fileExtention;
+                        $fileName = $req->titleFile.".".$fileExtention;
 
                         $completePathFile = $imageFolder.$fileName;
 
                         if($file->move($destination, $fileName)) {
-                            $this->databaseConn->submitSubTopicFile($req, $completePathFile,'pdf');
+                            $this->databaseConn->submitSubTopicFile($req, $completePathFile,$type);
                             return redirect('/manageOnlineCourse/availableClass/manageOnlineClass/' . $idCoursesClass . '/manageSession/' . $idTopic . '/' . $idSubTopic)->with('success', 'Your PDF has been inserted into database successfully.');
                         }else{
                             return redirect('/manageOnlineCourse/availableClass/manageOnlineClass/' . $idCoursesClass . '/manageSession/' . $idTopic . '/' . $idSubTopic)->with('error', 'Failed to be uploaded.');
@@ -302,7 +369,7 @@ class OnlineClassController extends Controller
 
 
                         $validator = Validator::make($req->all(), [
-                            'title' => [
+                            'titleFile' => [
                                 'required'
                             ],
                             'pptURL' => [
@@ -362,7 +429,7 @@ class OnlineClassController extends Controller
 
 
                     $validator = Validator::make($req->all(), [
-                        'title' => [
+                        'titleYoutube' => [
                             'required'
                         ],
                         'videoURL' => [
@@ -419,13 +486,13 @@ class OnlineClassController extends Controller
                         }
                     }
 
-                    if( $req->hasFile('File') ) {
+                    if( $req->hasFile('uploadFile') ) {
 
                         $validator = Validator::make($req->all(), [
-                            'title' => [
+                            'titleFile' => [
                                 'required'
                             ],
-                            'File' => [
+                            'uploadFile' => [
                                 'required'
                             ]
                         ]);
@@ -444,10 +511,10 @@ class OnlineClassController extends Controller
 
                         $destination = base_path().'/public'.$imageFolder;
 
-                        $file = $req->file('File');
+                        $file = $req->file('uploadFile');
                         $fileExtention = $file->clientExtension();
 
-                        $fileName = $req->title.".".$fileExtention;
+                        $fileName = $req->titleFile.".".$fileExtention;
 
                         $completePathFile = $imageFolder.$fileName;
 
@@ -500,7 +567,7 @@ class OnlineClassController extends Controller
 
 
                     $validator = Validator::make($req->all(), [
-                        'title' => [
+                        'titleExternal' => [
                             'required'
                         ],
                         'externalURL' => [

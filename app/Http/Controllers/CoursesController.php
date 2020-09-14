@@ -14,9 +14,17 @@ use App\Http\Requests;
 use App\Http\Backend\Database_communication;
 use App\Http\Middleware\appHelper;
 use App\Http\Middleware\CourseUserInterface;
+use App\Http\Middleware\FormUserInterface;
 
 class CoursesController extends Controller
 {
+    function __construct(){
+        $this->formUI = new FormUserInterface();
+        $this->databaseConn = new Database_communication();
+        $this->appHelper = new appHelper();
+        $this->mail = new MailController();
+    }
+
     public function index()
     {
         $databaseComm = new Database_communication();
@@ -24,7 +32,38 @@ class CoursesController extends Controller
 
         $available_course_data = $databaseComm->getAllOpenedCourses()->get();
 
-        return view('home',compact('available_course_data', 'userInterface'));
+        $header = view('header');
+        $footer = view('footer');
+
+        return view('home',compact('available_course_data', 'userInterface', 'header', 'footer'));
+    }
+
+    public function help_page(){
+        $db = $this->databaseConn;
+        if(session('idMember')){
+            $dataMember = $this->databaseConn->getAccountDataByIdMember(session('idMember'))->first();
+
+            if($dataMember) {
+                $idAuthority = $dataMember->idAuthority;
+                $formUI = new FormUserInterface();
+
+                $header = "";
+                $footer = "";
+
+                $leftMenuBar = $formUI->getLeftMenuBarByIdAuthority($idAuthority);
+
+                $content = view('helps.help',compact( 'db', 'header', 'footer'));
+
+                return view('dashboardUI.dashboard', compact('leftMenuBar', 'content'));
+            }else{
+                return redirect('/logout')->with("error","Something went wrong. Please try to re-login");
+            }
+        }else{
+            $header = view('header');
+            $footer = view('footer');
+
+            return view('helps.help',compact( 'db', 'header', 'footer'));
+        }
     }
 
     public function showClassCourseAbout($CourseCode,$idCoursesClass)
@@ -36,6 +75,7 @@ class CoursesController extends Controller
             $userInterface = new CourseUserInterface();
 
             $sqlCoursesClass = $databaseComm->getCoursesClassGeneralDataByIdCoursesClass($idCoursesClass);
+            $subcontent = view('dashboardUI.onlineClassControlDashboard.subContent.EnterOnlineClassOverview', compact('idCoursesClass'));
 
             if($sqlCoursesClass->get()->count() == 0){
                 $aboutClassCourseContent .= "<div class=\"row\">
@@ -53,7 +93,7 @@ class CoursesController extends Controller
                 //Start to load header information of selected Created Class Courses
                 foreach($dataCoursesClass as $data) {
                     $aboutClassCourseContent .= "<div class=\"row\">
-                                                    <div class=\"col-lg-12\">
+                                                    <div class=\"col-lg-6\">
                                                         <div class=\"panel panel-info\">
                                                             <!-- /.panel-heading -->
                                                             <div class=\"panel-body\">
@@ -66,33 +106,38 @@ class CoursesController extends Controller
                                                                             <h1>$data->nama_mata_kuliah_id</h1>
                                                                             
                                                                         </td>
-                                                                        <td rowspan='2'>
-                                                                            ".$userInterface->showVideoThumbnailOnCourseClassDescription($idCoursesClass, "500", "250")."
-                                                                        </td>
                                                                     </tr>
                                                                     <tr>
-                                                                        <td>".$userInterface->enrollButtonToCourseClass($idCoursesClass)."</td>
+                                                                        <td>
+                                                                            <br /><br />
+                                                                        </td>
+                                                                    <tr>
+                                                                        <td>".$userInterface->enrollButtonToCourseClass($idCoursesClass, $CourseCode)."</td>
                                                                     </tr>
                                                                 </table>
                                                             </div>
                                                         </div>
                                                     </div>
-                                                </div>";
-                    $aboutClassCourseContent .= "<div class=\"row\">
-                                                    <div class=\"col-lg-8\">
+                                                    <div class=\"col-lg-6\">
                                                         <div class=\"panel panel-info\">
                                                             <!-- /.panel-heading -->
                                                             <div class=\"panel-body\">
-                                                                <center><h3>OVERVIEW</h3></center>
-                                                                <div class='row' >
-                                                                    <div class='row-overview'>
-                                                                        $data->CourseOverview
-                                                                    </div>
-                                                                </div>
+                                                                <br />
+                                                                
+                                                                <!-- /.panel-body -->
+                                                                <table width=\"100%\">
+                                                                    <tr>
+                                                                        <td rowspan='2'>
+                                                                            ".$userInterface->showVideoThumbnailOnCourseClassDescription($idCoursesClass, "500", "250")."
+                                                                        </td>
+                                                                    </tr>
+                                                                </table>
                                                             </div>
                                                         </div>
                                                     </div>
-                                                    <div class=\"col-lg-4\">
+                                                </div>
+                                                <div class='row'>
+                                                <div class=\"col-lg-12\">
                                                         <div class=\"panel panel-info\">
                                                             <!-- /.panel-heading -->
                                                             <div class=\"panel-body\">
@@ -121,7 +166,25 @@ class CoursesController extends Controller
                                                             </div>
                                                         </div>
                                                     </div>
-                                                </div>";
+</div>";
+
+                    $aboutClassCourseContent .= "".$subcontent;
+                    /*$aboutClassCourseContent .= "<div class=\"row\">
+                                                    <div class=\"col-lg-8\">
+                                                        <div class=\"panel panel-info\">
+                                                            <!-- /.panel-heading -->
+                                                            <div class=\"panel-body\">
+                                                                <center><h3>OVERVIEW</h3></center>
+                                                                <div class='row' >
+                                                                    <div class='row-overview'>
+                                                                        $subcontent
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                    
+                                                </div>";*/
                 }
             }
         }
@@ -131,6 +194,32 @@ class CoursesController extends Controller
         }
 
         return view('about_class_course',compact('aboutClassCourseContent'));
+    }
+
+    public function showAvailableCourses(){
+        $isUserAllowed = $this->appHelper->isUserAllowedToAccess();
+
+        if($isUserAllowed == FALSE){
+            return redirect('/logout')->with('status','You are not allowed to access this system by our administrator.');
+        }
+
+        if(session('idMember')){
+            $dataMember = $this->databaseConn->getAccountDataByIdMember(session('idMember'))->first();
+
+            if($dataMember) {
+                $idAuthority = $dataMember->idAuthority;
+
+                $leftMenuBar = $this->formUI->getLeftMenuBarByIdAuthority($idAuthority);
+
+                $content = view('dashboardUI.dashboardContents.availableCourses');
+
+                return view('dashboardUI.dashboard', compact('leftMenuBar', 'content'));
+            }else{
+                return redirect('/logout')->with('status','error');
+            }
+        }else{
+            return redirect('/')->with('status','error');
+        }
     }
 }
 ?>

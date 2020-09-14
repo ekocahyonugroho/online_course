@@ -5,18 +5,18 @@
     </a>
     <ul class="sidenav-second-level collapse" id="collapseCourseClass">
         <li>
-            <a href="#">Available Course</a>
+            <a href="/courses">Available Course</a>
         </li>
         <li>
-            <a href="#">Enrolled</a>
+            <a href="/dashboard">Enrolled</a>
         </li>
         <li>
-            <a href="#">My Report</a>
+            <a href="/courses/finished">Finished</a>
         </li>
     </ul>
 </li>
 <li class="nav-item" data-toggle="tooltip" data-placement="right" title="Link">
-    <a class="nav-link" href="#">
+    <a class="nav-link" href="/member/activityReport">
         <i class="fa fa-fw fa-link"></i>
         <span class="nav-link-text">Activity Report</span>
     </a>

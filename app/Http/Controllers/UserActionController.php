@@ -1430,7 +1430,8 @@ class UserActionController extends Controller
                 if($idAuthority == "1" OR $idAuthority == "2") {
                     $leftMenuBar = $this->FormUI->getDefaultMenuBarEnterCourse($idAuthority, $idCoursesClass);
 
-                    $subcontent = view('dashboardUI.onlineClassControlDashboard.subContent.OnlineClassOverview', compact('idCoursesClass'));
+                    /*$subcontent = view('dashboardUI.onlineClassControlDashboard.subContent.OnlineClassOverview', compact('idCoursesClass'));*/
+                    $subcontent = view('dashboardUI.onlineClassControlDashboard.subContent.EnterOnlineClassOverview', compact('idCoursesClass'));
 
                     $content = view('dashboardUI.onlineClassControlDashboard.ManageOnlineClass', compact('subcontent','idCoursesClass'));
                     //$content = "";
@@ -1443,7 +1444,8 @@ class UserActionController extends Controller
                         if($getMentor > 0){
                             $leftMenuBar = $this->FormUI->getDefaultMenuBarEnterCourse($idAuthority, $idCoursesClass);
 
-                            $subcontent = view('dashboardUI.onlineClassControlDashboard.subContent.OnlineClassOverview', compact('idCoursesClass'));
+                            /*$subcontent = view('dashboardUI.onlineClassControlDashboard.subContent.OnlineClassOverview', compact('idCoursesClass'));*/
+                            $subcontent = view('dashboardUI.onlineClassControlDashboard.subContent.EnterOnlineClassOverview', compact('idCoursesClass'));
 
                             $content = view('dashboardUI.onlineClassControlDashboard.ManageOnlineClass', compact('subcontent','idCoursesClass'));
                             //$content = "";

@@ -4,10 +4,15 @@
 $db = $Database_communication;
 
 $dataOnlineClass = $db->getCoursesClassGeneralDataByIdCoursesClass($idCoursesClass)->first();
+$stmtTopic = $db->getCoursesClassTopicByIdCoursesClass($idCoursesClass)->get();
 
 $dataMember = $db->getAccountDataByIdMember(session('idMember'))->first();
 
-$idAuthority = $dataMember->idAuthority;
+if(is_array($dataMember)){
+    $idAuthority = $dataMember->idAuthority;
+}else{
+    $idAuthority = "0";
+}
 ?>
 
 <div class="row">
@@ -25,6 +30,88 @@ $idAuthority = $dataMember->idAuthority;
                 @else
                     {!! $dataOnlineClass->CourseOverview !!}
                 @endif
+            </div>
+        </div>
+    </div>
+</div>
+<div class="row">
+    <div class="col-lg-12">
+        <!-- Example Bar Chart Card-->
+        <div class="card mb-3">
+            <div class="card-header bg-info">
+                <i class="fa fa-user-circle-o"></i> Sessions</div>
+            <div class="card-body">
+                <table class="table table-bordered">
+                    <thead>
+                    <tr>
+                        <th>Topic</th>
+                        <th>Sub Topic</th>
+                        <th>Reading Description</th>
+                        <th>Materials</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    @foreach($stmtTopic AS $dataTopic)
+                        <?php
+                        $stmtSubTopic = $db->getCoursesClassSubTopicByIdTopic($dataTopic->idTopic);
+                        $dataSubTopic = $stmtSubTopic->get();
+                        $countSubTopic = $stmtSubTopic->count();
+
+                        $i = 0;
+                        ?>
+                        <tr>
+                            <td rowspan="{!! $countSubTopic !!}">{!! $dataTopic->TopicName !!}</td>
+                        @foreach($dataSubTopic AS $subTopic)
+                            <?php
+                                    $stmtMaterials = $db->getCoursesClassSubTopicMaterialByIdSubTopic($subTopic->idSubTopic);
+                                    $dataMaterials = $stmtMaterials->get();
+                                    $countMaterials = $stmtMaterials->count();
+                                    $x = 1;
+                            if($i === 0){
+                                ?>
+                                <td>{!! $subTopic->subTopicName !!}</td>
+                                <td>{!! $subTopic->subTopicDescription !!}</td>
+                                <td>
+                                    <table class="table table-striped">
+                                        <thead>
+                                            <tr>
+                                                <th>No.</th>
+                                                <th>Type</th>
+                                                <th>Title</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                        @if($countMaterials === 0)
+                                            <tr><td colspan="3">NO DATA YET</td></tr>
+                                        @else
+                                            @foreach($dataMaterials AS $materials)
+                                                <tr>
+                                                <td>{!! $x !!}</td>
+                                                <td>{!! $materials->typeMaterial !!}</td>
+                                                <td>{!! $materials->titleMaterial !!}</td>
+                                                <?php $x++; ?>
+                                                </tr>
+                                            @endforeach
+                                        @endif
+                                        </tbody>
+                                    </table>
+                                </td>
+                                <?php
+                            }else{
+                                ?>
+                                <tr>
+                                    <td>{!! $subTopic->subTopicName !!}</td>
+                                    <td>{!! $subTopic->subTopicDescription !!}</td>
+                                    <td></td>
+                                </tr>
+                                <?php
+                            }
+                                $i++;
+                            ?>
+                        @endforeach
+                    @endforeach
+                    </tbody>
+                </table>
             </div>
         </div>
     </div>

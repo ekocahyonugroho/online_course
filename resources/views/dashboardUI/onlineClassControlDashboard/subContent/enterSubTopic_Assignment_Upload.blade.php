@@ -39,7 +39,7 @@ $no = 1;
                 <br />
                 <table class="table table-bordered">
                     <tbody>
-                    @if(count($dataQuestion) == 0)
+                    @if(empty($dataQuestion))
                         <tr class="table-danger">
                             <td colspan="2"><center>NO QUESTION</center></td>
                         </tr>
@@ -54,7 +54,7 @@ $no = 1;
                             </tr>
                             <tr>
                                 <td>
-                                    @if(count($getStudentAnswer) == 0)
+                                    @if(empty($getStudentAnswer))
                                         @if($getAssignmentCompletion->count() == 0)
                                             @if($isClosed == '1')
                                                 <form>
